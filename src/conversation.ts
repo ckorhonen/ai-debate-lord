@@ -15,7 +15,7 @@ export async function runConversationUnified(initialMessage: string, turns: numb
   const logArr: string[] = [];
 
   // Log header information
-  const headerLog = `System Prompt for LLM1 (Model: ${LLM1_MODEL}):\n${systemPromptLLM1}\n\nSystem Prompt for LLM2 (Model: ${LLM2_MODEL}):\n${systemPromptLLM2}\n\nOriginal Question: "${originalQuestion}"\n`;
+  const headerLog = `System Prompt for LLM1 (Model: ${LLM1_MODEL}):\n${systemPromptLLM1()}\n\nSystem Prompt for LLM2 (Model: ${LLM2_MODEL}):\n${systemPromptLLM2()}\n\nOriginal Question: "${originalQuestion}"\n`;
   logAndAppend(headerLog, logArr);
 
   for (let i = 0; i < turns; i++) {

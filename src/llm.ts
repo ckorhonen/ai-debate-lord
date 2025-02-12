@@ -1,4 +1,3 @@
-// c:\Users\yepis\dev\llm-dialog\llm.ts
 import axios from 'axios';
 import { LLM1_ENDPOINT, LLM2_ENDPOINT, LLM1_API_KEY, LLM2_API_KEY, LLM1_MODEL, LLM2_MODEL, systemPromptLLM1, systemPromptLLM2 } from './config';
 
@@ -25,6 +24,10 @@ function buildOpenaiPayload(systemPrompt: string, message: string, model: string
   };
 }
 
+function normalizeEndpoint(endpoint: string): string {
+  return endpoint.endsWith('/') ? endpoint : `${endpoint}/`;
+}
+
 export async function callLLMUnified(
   endpoint: string,
   apiKey: string,
@@ -33,8 +36,13 @@ export async function callLLMUnified(
   message: string,
   model: string
 ): Promise<string> {
+  if (!endpoint) {
+    throw new Error('Endpoint URL is required');
+  }
+
   const isGoogleAPI = endpoint.toLowerCase().includes('googleapis');
-  const url = isGoogleAPI ? `${endpoint}${model}:generateContent?key=${apiKey}` : endpoint;
+  const normalizedEndpoint = normalizeEndpoint(endpoint);
+  const url = isGoogleAPI ? `${normalizedEndpoint}${model}:generateContent?key=${apiKey}` : normalizedEndpoint;
   const payload = isGoogleAPI ? buildGeminiPayload(systemPrompt, originalQuestion, message) : buildOpenaiPayload(systemPrompt, message, model);
 
   try {
@@ -42,17 +50,36 @@ export async function callLLMUnified(
       headers: { 'Content-Type': 'application/json' }
     });
 
-    return isGoogleAPI ? response.data.candidates[0].content.parts[0].text.trim() : response.data.choices[0].message.content.trim();
+    if (isGoogleAPI && response.data?.candidates?.[0]?.content?.parts?.[0]?.text) {
+      return response.data.candidates[0].content.parts[0].text.trim();
+    } else if (!isGoogleAPI && response.data?.choices?.[0]?.message?.content) {
+      return response.data.choices[0].message.content.trim();
+    }
+    throw new Error('Unexpected API response format');
   } catch (error) {
-    console.error(`Error calling LLM at ${url} with payload ${JSON.stringify(payload)}:`, error);
+    console.error(`Error calling LLM at ${url}:`, error);
     throw error;
   }
 }
 
 export async function callLLM1Unified(originalQuestion: string, message: string): Promise<string> {
-  return callLLMUnified(LLM1_ENDPOINT, LLM1_API_KEY, systemPromptLLM1, originalQuestion, message, LLM1_MODEL);
+  return callLLMUnified(
+    LLM1_ENDPOINT,
+    LLM1_API_KEY,
+    systemPromptLLM1(),
+    originalQuestion,
+    message,
+    LLM1_MODEL
+  );
 }
 
 export async function callLLM2Unified(originalQuestion: string, message: string): Promise<string> {
-  return callLLMUnified(LLM2_ENDPOINT, LLM2_API_KEY, systemPromptLLM2, originalQuestion, message, LLM2_MODEL);
+  return callLLMUnified(
+    LLM2_ENDPOINT,
+    LLM2_API_KEY,
+    systemPromptLLM2(),
+    originalQuestion,
+    message,
+    LLM2_MODEL
+  );
 }
