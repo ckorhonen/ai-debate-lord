@@ -33,27 +33,16 @@ export async function callLLMUnified(
   message: string,
   model: string
 ): Promise<string> {
-  let url: string;
-  let payload: any;
-
-  if (endpoint.toLowerCase().includes('googleapis')) {
-    url = `${endpoint}${model}:generateContent?key=${apiKey}`;
-    payload = buildGeminiPayload(systemPrompt, originalQuestion, message);
-  } else {
-    url = `${endpoint}`;
-    payload = buildOpenaiPayload(systemPrompt, message, model);
-  }
+  const isGoogleAPI = endpoint.toLowerCase().includes('googleapis');
+  const url = isGoogleAPI ? `${endpoint}${model}:generateContent?key=${apiKey}` : endpoint;
+  const payload = isGoogleAPI ? buildGeminiPayload(systemPrompt, originalQuestion, message) : buildOpenaiPayload(systemPrompt, message, model);
 
   try {
     const response = await axios.post(url, payload, {
       headers: { 'Content-Type': 'application/json' }
     });
 
-    if (endpoint.toLowerCase().includes('googleapis')) {
-      return response.data.candidates[0].content.parts[0].text.trim();
-    } else {
-      return response.data.choices[0].message.content.trim();
-    }
+    return isGoogleAPI ? response.data.candidates[0].content.parts[0].text.trim() : response.data.choices[0].message.content.trim();
   } catch (error) {
     console.error(`Error calling LLM at ${url} with payload ${JSON.stringify(payload)}:`, error);
     throw error;
