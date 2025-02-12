@@ -25,8 +25,10 @@ This repository contains a Node.js application that orchestrates epic debates be
    ```
 
 3. **Configure the application:**
-   - Update the `config.ts` file with your desired settings, including the API keys for your LLMs and the chosen battleground (topic).
+   - Duplicate the `.env.example` file and rename it to `.env`.
+   - In the `.env` file, configure your LLMs with API endpoints, keys and model names. Both Gemini and OpenAI standards are supported. Go nuts.
    - Modify the `system_prompt_llm1.txt` and `system_prompt_llm2.txt` files to set the initial instructions for each LLM. Will they be polite or ruthless? 🥊
+   - (Optional) Modify the `input.txt` with the initial question. What will be the battle ground?
 
 4. **Run the application:**
 
