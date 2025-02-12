@@ -55,7 +55,7 @@ export async function callLLMUnified(
       return response.data.choices[0].message.content.trim();
     }
   } catch (error) {
-    console.error(`Error calling LLM at ${url}:`, error);
+    console.error(`Error calling LLM at ${url} with payload ${JSON.stringify(payload)}:`, error);
     throw error;
   }
 }

@@ -26,15 +26,15 @@ export let systemPromptLLM2: string;
 
 export async function loadSystemPrompts() {
   try {
-    systemPromptLLM1 = await fs.readFile(path.join(__dirname, 'system_prompt_llm1.txt'), 'utf-8');
+    systemPromptLLM1 = await fs.readFile(path.join(__dirname, '../system_prompt_llm1.txt'), 'utf-8');
   } catch (error) {
-    console.error('Error reading system_prompt_llm1.txt, using default prompt:', error);
+    console.error(`Error reading system_prompt_llm1.txt at ${path.join(__dirname, '../system_prompt_llm1.txt')}, using default prompt:`, error);
     systemPromptLLM1 = 'You are the enabler. Always angles to find the constructive way forwards.';
   }
   try {
-    systemPromptLLM2 = await fs.readFile(path.join(__dirname, 'system_prompt_llm2.txt'), 'utf-8');
+    systemPromptLLM2 = await fs.readFile(path.join(__dirname, '../system_prompt_llm2.txt'), 'utf-8');
   } catch (error) {
-    console.error('Error reading system_prompt_llm2.txt, using default prompt:', error);
+    console.error(`Error reading system_prompt_llm2.txt at ${path.join(__dirname, '../system_prompt_llm2.txt')}, using default prompt:`, error);
     systemPromptLLM2 = 'You are the critic. Always finds the flaw, but not for the sake of negativity. The goal is to be the critical mind essential to reaching a quality verdict.';
   }
 }

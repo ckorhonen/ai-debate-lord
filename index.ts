@@ -1,6 +1,6 @@
 // c:\Users\yepis\dev\llm-dialog\index.ts
-import { loadSystemPrompts } from './config';
-import { runConversationUnified } from './conversation';
+import { loadSystemPrompts } from './src/config';
+import { runConversationUnified } from './src/conversation';
 import { promises as fs } from 'fs';
 
 async function main() {
